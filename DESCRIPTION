@@ -1,0 +1,19 @@
+Package: ggVolcano
+Title: Make a nice volcano plot
+Version: 0.0.1
+Author: BioSenior <609382383@qq.com>
+Maintainer: BioSenior <609382383@qq.com>
+Description: You can make a beautiful volcano plot with just one line of code.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: 
+    ggplot2,
+    ggrepel,
+    latex2exp,
+    magrittr
+Depends: 
+    tidyverse,
+    R (>= 2.10)
+LazyData: true
