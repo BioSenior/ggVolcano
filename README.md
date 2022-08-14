@@ -23,7 +23,7 @@ devtools::install_github("BioSenior/ggvolcano")
 ```
 
 ## Use function `ggvolcano` to make a general volcano plot.
-### basic use
+### basic usage
 - Make sure you have a DEG result data containing information on differentially expressed genes (including GeneName, Log2FC, pValue, FDR).
 - If your data don't have a column named ‘regulate’, you can use the `add_regulate` function to add.
 - Use function `ggvolcano` to make a general volcano plot. You can use `?ggvolcano` to see the parameters of the function.
@@ -81,7 +81,7 @@ p1|p2
 
 ## Use function `gradual_volcano` to make a gradient color volcano plot.
 
-### basic use
+### basic usage
 - Make sure you have a DEG result data containing information on differentially expressed genes (including GeneName, Log2FC, pValue, FDR).
 - If your data don't have a column named ‘regulate’, you can use the `add_regulate` function to add.
 - Use function `ggvolcano` to make a general volcano plot. You can use `?gradual_Volcano` to see the parameters of the function.
@@ -129,7 +129,7 @@ p1|p2
 
 
 ## Use function `term_volcano` to make a GO term volcano plot.
-### basic use
+### basic usage
 - Make sure you have a DEG result data containing information on differentially expressed genes (including GeneName, Log2FC, pValue, FDR).
 - Except a DEG result data, you also need a term data which is a two columns dataframe containing some genes' GO terms information.
 - If your data don't have a column named ‘regulate’, you can use the `add_regulate` function to add.
