@@ -47,6 +47,9 @@ ggvolcano(data, x = "log2FoldChange", y = "padj",
 ```
 
 <img src="man/figures/README-unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" width="100%" />
+
+
+
 > - You must set x and y to the corresponding column names in your data.
 > - If you want to add label to the points, please set label to the corresponding column names in your data. And the label_number parameter can adjust the number of displayed labels.(Select the top label_number genes in terms of FDR value.)
 
@@ -73,7 +76,11 @@ p1|p2
 ```
 
 <img src="man/figures/README-unnamed-chunk-4-1.png" title="plot of chunk unnamed-chunk-4" alt="plot of chunk unnamed-chunk-4" width="100%" />
+
+
+
 ## Use function `gradual_volcano` to make a gradient color volcano plot.
+
 ### basic use
 - Make sure you have a DEG result data containing information on differentially expressed genes (including GeneName, Log2FC, pValue, FDR).
 - If your data don't have a column named ‘regulate’, you can use the `add_regulate` function to add.
@@ -87,6 +94,9 @@ gradual_volcano(deg_data, x = "log2FoldChange", y = "padj",
 ```
 
 <img src="man/figures/README-unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" width="100%" />
+
+
+
 ### Change the fill and the color
 
 ```r
@@ -112,6 +122,9 @@ p1|p2
 ```
 
 <img src="man/figures/README-unnamed-chunk-6-1.png" title="plot of chunk unnamed-chunk-6" alt="plot of chunk unnamed-chunk-6" width="100%" />
+
+
+
 > - If you want to adjust the size range of the points, you can use `pointSizeRange = c(min_size,max_size)`.
 
 
@@ -133,6 +146,9 @@ term_volcano(deg_data, term_data,
 ```
 
 <img src="man/figures/README-unnamed-chunk-7-1.png" title="plot of chunk unnamed-chunk-7" alt="plot of chunk unnamed-chunk-7" width="100%" />
+
+
+
 ### Change the fill and the color
 
 ```r
@@ -152,8 +168,10 @@ term_volcano(data, term_data,
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" title="plot of chunk unnamed-chunk-8" alt="plot of chunk unnamed-chunk-8" width="100%" />
-> Welcome to pay attention to the BioSenior to get more practical tutorials on scientific mapping!
 
+
+
+> Welcome to pay attention to the BioSenior to get more practical tutorials on scientific mapping!
 
 
 
