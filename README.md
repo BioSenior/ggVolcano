@@ -19,7 +19,7 @@ You can install the development version of `ggVolcano` like so:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("BioSenior/ggvolcano")
+devtools::install_github("BioSenior/ggVolcano")
 ```
 
 ## Use function `ggvolcano` to make a general volcano plot.
