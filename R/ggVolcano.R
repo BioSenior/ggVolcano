@@ -47,8 +47,13 @@ add_regulate <- function(data, log2FC_name = "log2FoldChange",
 #' @param x_lab label of x-axis.
 #' @param y_lab label of y-axis.
 #' @param legend_title title of the legend.
+#' @param legend_position the position of legend. You can choose one from "UL" -- Up Left, "UR" -- Up Right, "DL" -- Down Left, "DR" -- Down Right
 #' @param add_line a logical value, whether to add a dashed line, defult is TRUE.
+#' @param log2FC_cut cutoff value of log2FC.
+#' @param FDR_cut cutoff value of FDR.
+#' @param add_label a logical value, whether to add gene label, defult is TRUE.
 #' @param label the column name corresponding to the label.
+#' @param custom_label a vector containing your interest gene names that you want to add to the plot.
 #' @param label_number how many gene labels you want to show in the plot.
 #' @param output a logical value, whether to save the image, defult is TRUE.
 #' @param filename if the output = TRUE, please set a filename.
@@ -69,16 +74,30 @@ ggvolcano <- function(data,
                       pointSize = 1, pointShape = 21,
                       fills = c("#00AFBB","#999999","#FC4E07"),
                       colors = c("#00AFBB","#999999","#FC4E07"),
-                      x_lab = NULL, y_lab = NULL, legend_title = NULL,
-                      add_line = TRUE, label = "row", label_number = 10,
+                      x_lab = NULL, y_lab = NULL,
+                      legend_title = NULL, legend_position = "UL",
+                      log2FC_cut = 1, FDR_cut = 0.05,
+                      add_line = TRUE,
+                      add_label = TRUE, label = "row",
+                      label_number = 10, custom_label = NULL,
                       output = TRUE, filename = "volcano_plot"){
 
   colnames(data)[colnames(data) == x] <- "x"
   colnames(data)[colnames(data) == y] <- "y"
   colnames(data)[colnames(data) == label] <- "geneName"
 
-  data$label <- rep("",nrow(data))
-  data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+  # 默认排序标签 or 自定义标签
+  if (is.null(custom_label)) {
+    if (label_number != 0) {
+      data$label <- rep("",nrow(data))
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+    } else {
+      data$label <- rep("",nrow(data))
+    }
+  } else {
+    data$label <- rep("",nrow(data))
+    data$label[match(custom_label, data$geneName)]<- custom_label
+  }
 
   p <- ggplot(data, aes(x, -log10(y), color = regulate))
   p <- p +
@@ -88,11 +107,7 @@ ggvolcano <- function(data,
     theme_bw() +
     theme(title = element_text(size = 15),
           text = element_text(size = 15),
-          legend.position = c(0.01, 0.99),
-          legend.justification = c(0, 1),
           legend.background = element_blank()) +
-    # 添加标签：
-    geom_text_repel(aes(label = label), size=3, max.overlaps = 100, key_glyph = draw_key_point)+
     # 设置部分图例不显示：
     guides(fill = guide_legend(title = legend_title %||% "Regulate"),
            color = guide_legend(title = legend_title %||% "Regulate"))+
@@ -100,11 +115,47 @@ ggvolcano <- function(data,
     labs(x = x_lab %||% TeX("$Log_2 \\textit{FC}$"),
          y = y_lab %||% TeX("$-Log_{10} \\textit{FDR} $"))
 
+  # 添加虚线：
   if (add_line == TRUE) {
     p <- p +
-      geom_vline(xintercept = c(-1,1), linetype ="dashed") +
-      geom_hline(yintercept = -log10(0.05), linetype ="dashed")
+      geom_vline(xintercept = c(-log2FC_cut,log2FC_cut), linetype ="dashed") +
+      geom_hline(yintercept = -log10(FDR_cut), linetype ="dashed")
   }
+
+  # 添加标签：
+  if (add_label == TRUE) {
+    p <- p +
+      geom_text_repel(aes(label = label), size=3, max.overlaps = 100, key_glyph = draw_key_point)
+
+  }
+
+  # 图例位置：
+  if (legend_position == "UL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.99),
+        legend.justification = c(0, 1),
+      )
+  } else if (legend_position == "UR") {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.99),
+        legend.justification = c(1, 1),
+      )
+  } else if (legend_position == "DL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.01),
+        legend.justification = c(0, 0),
+      )
+  } else {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.01),
+        legend.justification = c(1, 0),
+      )
+  }
+
 
   # 保存图片：
   if (output == TRUE) {
@@ -127,8 +178,13 @@ ggvolcano <- function(data,
 #' @param x_lab label of x-axis.
 #' @param y_lab label of y-axis.
 #' @param legend_title title of the legend.
+#' @param legend_position the position of legend. You can choose one from "UL" -- Up Left, "UR" -- Up Right, "DL" -- Down Left, "DR" -- Down Right
 #' @param add_line a logical value, whether to add a dashed line, defult is TRUE.
+#' @param log2FC_cut cutoff value of log2FC.
+#' @param FDR_cut cutoff value of FDR.
+#' @param add_label a logical value, whether to add gene label, defult is TRUE.
 #' @param label the column name corresponding to the label.
+#' @param custom_label a vector containing your interest gene names that you want to add to the plot.
 #' @param label_number how many gene labels you want to show in the plot.
 #' @param output a logical value, whether to save the image, defult is TRUE.
 #' @param filename if the output = TRUE, please set a filename.
@@ -150,26 +206,31 @@ gradual_volcano <- function(data,
                             pointSizeRange = c(0.5, 4),
                             fills = c("#39489f","#39bbec","#f9ed36","#f38466","#b81f25"),
                             colors = c("#17194e","#68bfe7","#f9ed36","#a22f27","#211f1f"),
-                            x_lab = NULL, y_lab = NULL, legend_title = NULL,
-                            add_line = TRUE, label = "row", label_number = 10,
+                            x_lab = NULL, y_lab = NULL,
+                            legend_title = NULL, legend_position = NULL,
+                            add_line = TRUE, log2FC_cut = 1, FDR_cut = 0.05,
+                            add_label = TRUE, label = "row",
+                            label_number = 10, custom_label = NULL,
                             output = TRUE, filename = "volcano_plot"
                             ){
   colnames(data)[colnames(data) == x] <- "x"
   colnames(data)[colnames(data) == y] <- "y"
   colnames(data)[colnames(data) == label] <- "geneName"
 
-  data$label <- rep("",nrow(data))
-  data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+  # 默认排序标签 or 自定义标签
+  if (is.null(custom_label)) {
+    if (label_number != 0) {
+      data$label <- rep("",nrow(data))
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+    } else {
+      data$label <- rep("",nrow(data))
+    }
+  } else {
+    data$label <- rep("",nrow(data))
+    data$label[match(custom_label, data$geneName)]<- custom_label
+  }
 
   p <- ggplot(data,aes(x, -log10(y)))
-
-  if (add_line == TRUE) {
-    p <- p +
-      # 横向水平参考线：
-      geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "#999999")+
-      # 纵向垂直参考线：
-      geom_vline(xintercept = c(-1, 1), linetype = "dashed", color = "#999999")
-  }
 
   p <- p +
     # 散点图:
@@ -185,19 +246,61 @@ gradual_volcano <- function(data,
     theme_bw()+
     # 调整主题和图例位置：
     theme(panel.grid = element_blank(),
-          legend.position = c(0.01,0.7),
-          legend.justification = c(0,1),
           legend.background = element_blank()
     )+
     # 设置部分图例不显示：
     guides(fill = guide_colourbar(title = legend_title %||% "-Log10_q-value"),
            color = "none",
            size = "none")+
-    # 添加标签：
-    geom_text_repel(aes(label = label, color = -log10(y)), size=3, max.overlaps = 10)+
     # 修改坐标轴：
     labs(x = x_lab %||% TeX("$Log_2 \\textit{FC}$"),
          y = y_lab %||% TeX("$-Log_{10} \\textit{FDR} $"))
+
+  # 添加虚线：
+  if (add_line == TRUE) {
+    p <- p +
+      geom_vline(xintercept = c(-log2FC_cut,log2FC_cut), linetype ="dashed") +
+      geom_hline(yintercept = -log10(FDR_cut), linetype ="dashed")
+  }
+
+  # 添加标签：
+  if (add_label == TRUE) {
+    p <- p +
+      geom_text_repel(aes(label = label, color = -log10(y)), size=3, max.overlaps = 100, key_glyph = draw_key_point)
+
+  }
+
+  # 图例位置：
+  if (is.null(legend_position)){
+    p <- p +
+      theme(legend.position = c(0.01,0.7),
+      legend.justification = c(0,1)
+      )
+  } else if (legend_position == "UL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.99),
+        legend.justification = c(0, 1),
+      )
+  } else if (legend_position == "UR") {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.99),
+        legend.justification = c(1, 1),
+      )
+  } else if (legend_position == "DL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.01),
+        legend.justification = c(0, 0),
+      )
+  } else {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.01),
+        legend.justification = c(1, 0),
+      )
+  }
 
   # 保存图片：
   if (output == TRUE) {
@@ -220,10 +323,14 @@ gradual_volcano <- function(data,
 #' @param deg_point_size the size of these deg points. Defult is 2.
 #' @param legend_background_fill the fill color of legend background.
 #' @param legend_title title of the legend.
+#' @param legend_position the position of legend. You can choose one from "UL" -- Up Left, "UR" -- Up Right, "DL" -- Down Left, "DR" -- Down Right
 #' @param x_lab label of x-axis.
 #' @param y_lab label of y-axis.
 #' @param add_line a logical value, whether to add a dashed line, defult is TRUE.
-#' @param label the column name corresponding to the label.
+#' @param log2FC_cut cutoff value of log2FC.
+#' @param FDR_cut cutoff value of FDR.#' @param label the column name corresponding to the label.
+#' @param add_label a logical value, whether to add gene label, defult is TRUE.
+#' @param custom_label a vector containing your interest gene names that you want to add to the plot.
 #' @param label_number how many gene labels you want to show in the plot.
 #' @param output a logical value, whether to save the image, defult is TRUE.
 #' @param filename if the output = TRUE, please set a filename.
@@ -251,10 +358,12 @@ term_volcano <- function(data, term_data,
                                             metabolic="#eef0ac",myelin="#b1daa7",
                                             synaptic="#d0d0a0"),
                          deg_point_size = 2,
-                         legend_background_fill = "#fefde2",legend_title = NULL,
+                         legend_background_fill = "#fefde2",
+                         legend_title = NULL, legend_position = "UL",
+                         add_line = TRUE, log2FC_cut = NULL, FDR_cut = 0.05,
+                         add_label = TRUE, label = "row",
+                         label_number = 10, custom_label = NULL,
                          x_lab = NULL, y_lab = NULL,
-                         add_line = TRUE,
-                         label = "row", label_number = 10,
                          output = TRUE, filename = "volcano_plot"){
 
   colnames(term_data) <- c("geneName", "term")
@@ -274,9 +383,18 @@ term_volcano <- function(data, term_data,
   # 设定原始散点颜色：
   color <- rep(normal_point_color, nrow(data))
 
-  # 选取p值最显著的label_number个加上标签：
-  data$label <- rep("",nrow(data))
-  data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+  # 默认排序标签 or 自定义标签
+  if (is.null(custom_label)) {
+    if (label_number != 0) {
+      data$label <- rep("",nrow(data))
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+    } else {
+      data$label <- rep("",nrow(data))
+    }
+  } else {
+    data$label <- rep("",nrow(data))
+    data$label[match(custom_label, data$geneName)]<- custom_label
+  }
 
   p <- ggplot(data[which(data$GO_term!="others"),],
          aes(x,-log10(y),fill = GO_term))+
@@ -292,8 +410,6 @@ term_volcano <- function(data, term_data,
     theme_bw() +
     theme(panel.grid.major=element_blank(),
           panel.grid.minor=element_blank(),
-          legend.position = c(0.01, 0.99),
-          legend.justification = c(0, 1),
           # 图例大框颜色：
           legend.background = element_rect(
             fill = legend_background_fill, # 填充色
@@ -304,14 +420,52 @@ term_volcano <- function(data, term_data,
           legend.key = element_rect(fill = legend_background_fill),
           # 调整图例大小：
           legend.key.size = unit(12, "pt"))+
-    # 添加gene标签：部分标签没有显示是因为重叠，可以修改max.overlaps值；
-    geom_text_repel(data = data, aes(x,-log10(y), label = label), size=3, max.overlaps = 100)+
     guides(fill = guide_legend(title = legend_title %||% "GO terms"))
 
+  # 添加虚线：
   if (add_line == TRUE) {
+    if (is.null(log2FC_cut)) {
+      p <- p +
+        geom_vline(xintercept = 0, linetype ="longdash") +
+        geom_hline(yintercept = -log10(FDR_cut), linetype ="longdash")
+    } else {
+      p <- p +
+        geom_vline(xintercept = c(-log2FC_cut,log2FC_cut), linetype ="dashed") +
+        geom_hline(yintercept = -log10(FDR_cut), linetype ="dashed")
+    }
+  }
+
+  # 添加标签：
+  if (add_label == TRUE) {
     p <- p +
-      geom_vline(xintercept = 0, linetype ="longdash") +
-      geom_hline(yintercept = -log10(0.05), linetype ="longdash")
+      geom_text_repel(data = data, aes(x,-log10(y), label = label), size=3, max.overlaps = 100, key_glyph = draw_key_point)
+  }
+
+  # 图例位置：
+  if (legend_position == "UL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.99),
+        legend.justification = c(0, 1),
+      )
+  } else if (legend_position == "UR") {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.99),
+        legend.justification = c(1, 1),
+      )
+  } else if (legend_position == "DL") {
+    p <- p+
+      theme(
+        legend.position = c(0.01, 0.01),
+        legend.justification = c(0, 0),
+      )
+  } else {
+    p <- p+
+      theme(
+        legend.position = c(0.99, 0.01),
+        legend.justification = c(1, 0),
+      )
   }
 
   # 保存图片：

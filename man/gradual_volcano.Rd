@@ -14,9 +14,14 @@ gradual_volcano(
   x_lab = NULL,
   y_lab = NULL,
   legend_title = NULL,
+  legend_position = NULL,
   add_line = TRUE,
+  log2FC_cut = 1,
+  FDR_cut = 0.05,
+  add_label = TRUE,
   label = "row",
   label_number = 10,
+  custom_label = NULL,
   output = TRUE,
   filename = "volcano_plot"
 )
@@ -40,11 +45,21 @@ gradual_volcano(
 
 \item{legend_title}{title of the legend.}
 
+\item{legend_position}{the position of legend. You can choose one from "UL" -- Up Left, "UR" -- Up Right, "DL" -- Down Left, "DR" -- Down Right}
+
 \item{add_line}{a logical value, whether to add a dashed line, defult is TRUE.}
+
+\item{log2FC_cut}{cutoff value of log2FC.}
+
+\item{FDR_cut}{cutoff value of FDR.}
+
+\item{add_label}{a logical value, whether to add gene label, defult is TRUE.}
 
 \item{label}{the column name corresponding to the label.}
 
 \item{label_number}{how many gene labels you want to show in the plot.}
+
+\item{custom_label}{a vector containing your interest gene names that you want to add to the plot.}
 
 \item{output}{a logical value, whether to save the image, defult is TRUE.}
 

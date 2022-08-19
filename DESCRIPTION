@@ -1,6 +1,6 @@
 Package: ggVolcano
 Title: Make a nice volcano plot
-Version: 0.0.1
+Version: 0.0.2
 Author: BioSenior <609382383@qq.com>
 Maintainer: BioSenior <609382383@qq.com>
 Description: You can make a beautiful volcano plot with just one line of code.
