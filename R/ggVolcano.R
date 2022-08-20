@@ -90,7 +90,7 @@ ggvolcano <- function(data,
   if (is.null(custom_label)) {
     if (label_number != 0) {
       data$label <- rep("",nrow(data))
-      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$y)[1:label_number]]
     } else {
       data$label <- rep("",nrow(data))
     }
@@ -221,7 +221,7 @@ gradual_volcano <- function(data,
   if (is.null(custom_label)) {
     if (label_number != 0) {
       data$label <- rep("",nrow(data))
-      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$y)[1:label_number]]
     } else {
       data$label <- rep("",nrow(data))
     }
@@ -387,7 +387,7 @@ term_volcano <- function(data, term_data,
   if (is.null(custom_label)) {
     if (label_number != 0) {
       data$label <- rep("",nrow(data))
-      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$x)[1:label_number]]
+      data$label[order(data$y)[1:label_number]] <- data$geneName[order(data$y)[1:label_number]]
     } else {
       data$label <- rep("",nrow(data))
     }
